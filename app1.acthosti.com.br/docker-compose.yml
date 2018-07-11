@@ -1,0 +1,54 @@
+version: '3.3' 
+
+services:
+
+  db_internet_poupex:
+    image: mariadb:latest
+    container_name: "db_internet_poupex"
+    volumes:
+       - ./mariadb/conf.d:/etc/mysql/conf.d
+       - ./mariadb/mysql.conf.d:/etc/mysql/mysql.conf.d
+       - ./mariadb/data:/var/lib/mysql
+       - ./mariadb/log:/var/log/
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssw0rd
+      MYSQL_DATABASE: db_internet_poupex
+      MYSQL_USER: db_internet_poupex
+      MYSQL_PASSWORD: PS345px
+ 
+  wordpress_internet_poupex:
+    depends_on:
+      - db_internet_poupex
+    links:
+      - db_internet_poupex
+    image: wordpress:latest
+    container_name: "wordpress_internet_poupex"
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    volumes:
+      - ./wp-content/:/var/www/wordpress/
+      - ./logs/:/var/log/
+      - ./conf/etc/apache2/sites-enabled/:/etc/apache2/sites-enabled/:ro
+    environment:
+      WORDPRESS_DB_PREFIX: wp_poupex_
+      WORDPRESS_DB_HOST: db_internet_poupex:3306
+      WORDPRESS_DB_USER: db_internet_poupex
+      WORDPRESS_DB_PASSWORD: PS345px
+      WORDPRESS_DB_NAME: db_internet_poupex
+      WORDPRESS_DB_TIMEOUT: 180
+
+  phpmyadmin_internet_poupex:
+    depends_on:
+      - db_internet_poupex
+    links:
+      - db_internet_poupex:dbppx
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: "phpmyadmin_internet_poupex"
+    restart: unless-stopped
+    ports:
+      - "8002:80"
+    environment:
+      MYSQL_USERNAME: root
+      MYSQL_ROOT_PASSWORD: P@ssw0rd

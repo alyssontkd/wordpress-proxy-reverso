@@ -1,0 +1,15 @@
+version: '3.3' 
+
+services:
+
+  ftp-server:
+    image: stilliard/pure-ftpd:hardened
+    container_name: "ftp-server"
+    ports:
+      - 21:21
+      - 30000-30009:30000-30009
+    environment:
+      PUBLICHOST: localhost
+    volumes:
+      - ./conf/ftp/:/etc/pure-ftpd
+      - /var/www:/home/ftpusers
